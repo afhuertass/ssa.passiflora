@@ -5,8 +5,6 @@ from scipy.linalg import toeplitz
 import matplotlib.pyplot as plt
 
 
-
-
 def calculateZ(  pcs , indice , M ): # componentes principales
     Z1s = pcs.T[int(indice)][:]
     Z2s = pcs.T[int(indice)][:]
@@ -26,7 +24,7 @@ def calculateZ(  pcs , indice , M ): # componentes principales
 dataFolder = "../data/"
 dataFile =  dataFolder + "series1.xlsx"
 
-sheetName = "AgronetExport"
+sheetName = "Corabastos2"
 ## abrir archivo
 
 xFile = pd.ExcelFile(dataFile)
@@ -68,7 +66,7 @@ CovarianceMatrix = toeplitz (correlationVector )
 
 w,v = np.linalg.eig( CovarianceMatrix )
 
-print ( v[:][0] ) 
+
 
 #plt.show()
 
@@ -76,47 +74,37 @@ print ( v[:][0] )
 
 PC = np.matmul( datosNumpy  , v.T ) # 
 print("Componentes principales")
-print( PC )
+print( PC)
+print( "Primera componente principal")
+print( PC.T[0][:] )
 
 #  Construir
 PCIndex = 0 ; ## este numero cambiara con
 
-Z1 = PC.T[PCIndex][:]
-Z2 = PC.T[PCIndex][:]
-size = Z1.size
 
-for lag in range(1, M):
-    Zx = np.roll( Z2 , lag)
-    Zx[ 0 : lag ] = 0
-    #print ( Z2 )
-    Z1 = np.concatenate( ( Z1 , Zx )   )
+Z1 = calculateZ( PC , 0 , M)
+Z2 = calculateZ( PC , 1 , M)
+Z3 = calculateZ(PC , 2 , M)
+Z4 = calculateZ(PC , 3 , M)
 
-print("MATRIZ Z")
-Z1 = Z1.reshape(  M , size ).T
-print (  Z1  )
+print("Z4")
+print( Z4 ) 
 
+RC1 = np.matmul( Z1 , v[:][0].T)/M
+RC2 = np.matmul(Z2 , v[:][1].T)/M
+RC3 = np.matmul(Z3 , v[:][2].T)/M
+RC4 = np.matmul(Z4 , v[:][3].T)/M
 
-#plt.plot( PC )
-
-Z1 = calculateZ( PC , PCIndex , M);
-print(Z1)
-
-## componentes reconstruidas 
-
-#RC1 = np.matmul(  Z1 ,  v[:][0].T )/M
-#RC2 =  np.matmul(  Z1 ,  v[:][1].T )/M
-#RC3 = np.matmul(  Z1 ,  v[:][2].T )/M
-#RC4 =  np.matmul(  Z1 ,  v[:][3].T )/M
-
-RC = np.matmul( Z1 , v[:][PCIndex].T)/M
-
+RC = RC1 + RC2 + RC3 + RC4
 print("Reconstructed")
-print(RC)
+print(RC1)
 
 
-legends = [ ["Reco 1 "] , ["Reco 2"] , ["Reco 3"] , ["Reco 4"] ]
-plt.legend( legends )
-plt.plot( RC )
+
+#plt.plot( (RC1 ) )
+#plt.plot( (RC2 ) )
+#plt.plot( (RC3 ) )
+plt.plot( (RC ) )
 plt.plot( datosOriginal )
 
-#plt.show()
+plt.show()
