@@ -66,6 +66,18 @@ def reconstructedComponents(  Pcs , index , M , EigenVecs ):
 
     return RC1
     
+
+def mainProgram( serieDatos , M ):
+
+    CovMatrix = CovarianceMatrix( serieDatos , M)
+
+    PCS , EigenVs = principalComponents( serieDatos , M)
+
+    RC1 = reconstructedComponents (  PCS , 0 , M , EigenVs )
+
+    
+    
+    
     
     
 dataFolder = "../data/"
