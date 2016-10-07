@@ -75,6 +75,7 @@ def mainProgram( serieDatos , M ):
 
     RC1 = reconstructedComponents (  PCS , 0 , M , EigenVs )
 
+    
     return PCS , RC1
     
     
@@ -102,4 +103,4 @@ PC , Rc1 = mainProgram( datosNumpy , M)
 plt.plot( Rc1  )
 plt.plot( datosNumpy )
 
-plt.show()
+plt.draw()
