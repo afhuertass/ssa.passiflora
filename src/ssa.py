@@ -20,10 +20,51 @@ def calculateZ(  pcs , indice , M ): # componentes principales
     Z1s =  Z1s.reshape(  M , size ).T
 
     return Z1s
+def CovarianceMatrix( dataSerie , M ):
+    correlationList = []
+    for lag in xrange( 0, M):
+        correlationList.append( float( dataFrame["Datos"].autocorr(lag) )  )
 
-def PCs ( dataSerie ) : # calculate principal Components
+    correlationNp = np.array(correlationList)
+
+    return toeplitz (correlationVector ) # return covariance matrix 
+    
+
+def YMatrix ( dataSerie , M ) :
+    # calculate the "Y" matriz, aka shifted components of the original data series. 
     # tiene que ser un arreglo de numpy
-    dataSerie2 = dataSerie.copy()
+    
+    Y = dataSerie.copy()
+    size = Y.size
+    for lag in xrange(1,M):
+        Yparcial = np.roll( dataSerie , -lag)
+        Yparcial[ (size-lag) :(size) ] = 0
+
+        Y = np.concatenate( ( Y , Yparcial)  )
+
+    Y = Y.reshape( M , size ).T
+
+    return Y 
+
+
+def principalComponents( serieDatos , M  ):
+
+    CovMatrix = CovarianceMatrix(serieDatos , M)
+    Ydata = YMatrix( dataSerie , M)
+
+    EigenVals , EigenVecs = np.linalg.eig( CovMatrix )
+
+    PCs = np.matmul( Ydata , EigenVecs.T )
+
+    return PCs , EigenVecs
+
+
+def reconstructedComponents(  Pcs , index , M , EigenVecs ):
+
+    Z = calculateZ ( Pcs , index , M)
+    RC1 = np.matmul( Z  , Eigenvecs[:][index].T   )/M
+
+    return RC1
     
     
     
