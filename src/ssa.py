@@ -4,6 +4,7 @@ import numpy as np
 from scipy.linalg import toeplitz
 import matplotlib.pyplot as plt
 
+from sys  import argv 
 
 def calculateZ(  pcs , indice , M ): # componentes principales
     Z1s = pcs.T[int(indice)][:]
@@ -20,6 +21,11 @@ def calculateZ(  pcs , indice , M ): # componentes principales
 
     return Z1s
 
+def PCs ( dataSerie ) : # calculate principal Components
+    # tiene que ser un arreglo de numpy
+    dataSerie2 = dataSerie.copy()
+    
+    
     
 dataFolder = "../data/"
 dataFile =  dataFolder + "series1.xlsx"
@@ -101,10 +107,10 @@ print(RC1)
 
 
 
-#plt.plot( (RC1 ) )
-#plt.plot( (RC2 ) )
+plt.plot( (RC1 ) )
+plt.plot( (RC2 ) )
 #plt.plot( (RC3 ) )
-plt.plot( (RC ) )
+#plt.plot( (RC ) )
 plt.plot( datosOriginal )
 
 plt.show()
