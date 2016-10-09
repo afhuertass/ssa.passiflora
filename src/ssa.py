@@ -20,10 +20,10 @@ def calculateZ(  pcs , indice , M ): # componentes principales
     Z1s =  Z1s.reshape(  M , size ).T
 
     return Z1s
-def CovarianceMatrix( dataSerie , M ):
+def CovarianceMatrix( dataSerie , M , dataPandas  ):
     correlationList = []
     for lag in xrange( 0, M):
-        correlationList.append( float( dataFrame["Datos"].autocorr(lag) )  )
+        correlationList.append( float( dataPandas.autocorr(lag) )  )
 
     correlationNp = np.array(correlationList)
 
@@ -47,9 +47,9 @@ def YMatrix ( dataSerie , M ) :
     return Y 
 
 
-def principalComponents( serieDatos , M  ):
+def principalComponents( serieDatos , M , dataPandas  ):
 
-    CovMatrix = CovarianceMatrix(serieDatos , M)
+    CovMatrix = CovarianceMatrix(serieDatos , M , dataPandas )
     Ydata = YMatrix( serieDatos , M)
 
     EigenVals , EigenVecs = np.linalg.eig( CovMatrix )
@@ -59,48 +59,49 @@ def principalComponents( serieDatos , M  ):
     return PCs , EigenVecs
 
 
-def reconstructedComponents(  Pcs , index , M , EigenVecs ):
+def reconstructedComponents(  Pcs , M , EigenVecs ):
 
-    Z = calculateZ ( Pcs , index , M)
-    RC1 = np.matmul( Z  , EigenVecs[:][index].T   )/M
-
-    return RC1
+    #Z = calculateZ ( Pcs , index , M)
+    RCS = []
+    for r in range(0,M):
+        Z = calculateZ ( Pcs , r , M)
+        RC = np.matmul( Z  , EigenVecs[:][r].T   )/M
+        RCS.append(  RC )
+    return RCS
     
 
-def mainProgram( serieDatos , M ):
+def mainProgram( serieDatos , M , dataPandas ):
 
-    CovMatrix = CovarianceMatrix( serieDatos , M)
+    # CovMatrix = CovarianceMatrix( serieDatos , M ,dataFrame )
 
-    PCS , EigenVs = principalComponents( serieDatos , M)
-
-    RC1 = reconstructedComponents (  PCS , 0 , M , EigenVs )
-
-    
-    return PCS , RC1
+    PCS , EigenVs = principalComponents( serieDatos , M , dataPandas )
+    RCS = reconstructedComponents( PCS , M , EigenVs )
+    return PCS , ( RCS  )
     
     
-    
-    
-dataFolder = "../data/"
-dataFile =  dataFolder + "series1.xlsx"
+def getData( dataPath , sheetName, col ):
 
-sheetName = "Corabastos2"
+    xFile = pd.ExcelFile(dataPath)
+    dataFrame = xFile.parse( sheetName )
+
+    return dataFrame[col].as_matrix() , dataFrame[col]
+
+
+    
+dataPath = "../data/series1.xlsx"
+sheetName = "AgronetExport2"
+col = "Datos"
+dataSeries , dataPandas  = getData( dataPath , sheetName , col)
 ## abrir archivo
+M = 6  # lags
 
-xFile = pd.ExcelFile(dataFile)
-dataFrame = xFile.parse(sheetName)
-
-M = 4  # lags
-
-correlationList = []
-
-datosNumpy = dataFrame["Datos"].as_matrix()
-
-
-PC , Rc1 = mainProgram( datosNumpy , M)
+PC , Rc1 = mainProgram( dataSeries , M , dataPandas)
   
 
-plt.plot( Rc1  )
-plt.plot( datosNumpy )
-
-plt.draw()
+#plt.plot( Rc1  )
+plt.plot( dataSeries  )
+for i in range(0, M):
+    
+    plt.plot( Rc1[i] )
+    
+plt.show()
