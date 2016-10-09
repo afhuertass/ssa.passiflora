@@ -89,11 +89,11 @@ def getData( dataPath , sheetName, col ):
 
     
 dataPath = "../data/series1.xlsx"
-sheetName = "AgronetExport2"
+sheetName = "Corabastos2"
 col = "Datos"
 dataSeries , dataPandas  = getData( dataPath , sheetName , col)
 ## abrir archivo
-M = 6  # lags
+M = 4  # lags
 
 PC , Rc1 = mainProgram( dataSeries , M , dataPandas)
   
